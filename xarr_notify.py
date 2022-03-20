@@ -8,11 +8,6 @@ import movie_db_api
 
 # 请在 config.yml 文件中配置
 QYWX = {}
-SMMS_ID = ''
-SMMS_PSWD = ''
-PHOTO_QUALITY = 1
-SONARR_PATH = ''
-RADARR_PATH = ''
 
 
 # 企业微信 APP 推送
@@ -223,11 +218,6 @@ class Smms:
 
 def load_user_config():
     global QYWX
-    global SMMS_ID
-    global SMMS_PSWD
-    global PHOTO_QUALITY
-    global SONARR_PATH
-    global RADARR_PATH
     user_setting_filepath = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config/config.yml')
     if os.path.exists(user_setting_filepath):
         with open(user_setting_filepath, 'r', encoding='utf-8') as file:
@@ -235,11 +225,6 @@ def load_user_config():
         QYWX = user_config['user']['qywx']
         if not QYWX:
             raise KeyError('未配置企业微信')
-        SMMS_ID = user_config['user']['smms_id']
-        SMMS_PSWD = user_config['user']['smms_pswd']
-        PHOTO_QUALITY = user_config['user']['photo_quality']
-        SONARR_PATH = user_config['sonarr']['sonarr_path']
-        RADARR_PATH = user_config['radarr']['radarr_path']
 
 
 def get_info_from_imdb_id(imdb_id):
@@ -479,13 +464,3 @@ class Radarr:
         radarr_fun(post_data)
 
 
-if __name__ == '__main__':
-    load_user_config()
-    if "sonarr_eventtype" in os.environ and os.environ["sonarr_eventtype"]:
-        event_type = os.environ["sonarr_eventtype"]
-        Sonarr().exec(event_type)
-    elif "radarr_eventtype" in os.environ and os.environ["radarr_eventtype"]:
-        event_type = os.environ["radarr_eventtype"]
-        Radarr().exec(event_type)
-    else:
-        wecom_app('XarrNotify', "未检测到参数.")
