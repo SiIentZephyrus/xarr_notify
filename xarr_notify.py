@@ -269,32 +269,6 @@ def HRS(size):
             return '%.2f' % (size / (1024 ** i)) + ' ' + units[i]
 
 
-def get_file_url(series_id, arr_type):
-    if not series_id:
-        return None
-    dir_path = os.path.join(os.environ["HOME"], '.config', arr_type, 'MediaCover', series_id)
-    if arr_type == 'Sonarr':
-        if SONARR_PATH:
-            dir_path = os.path.join(SONARR_PATH, series_id)
-    elif arr_type == 'Radarr':
-        if RADARR_PATH:
-            dir_path = os.path.join(RADARR_PATH, series_id)
-
-    if os.path.exists(dir_path):
-        photo_name = 'fanart-180.jpg'
-        if PHOTO_QUALITY == 1:
-            photo_name = 'fanart-360.jpg'
-        elif PHOTO_QUALITY == 2:
-            photo_name = 'fanart-180.jpg'
-
-        if os.path.exists(os.path.join(dir_path, photo_name)):
-            media_file = os.path.join(dir_path, photo_name)
-            token = Smms.get_token(SMMS_ID, SMMS_PSWD)
-            url = Smms.upload(media_file, token)
-            return url
-    return None
-
-
 def fill_msg_from_detail(detail, event_type,  platform):
     title = ''
     msg = ''
@@ -304,13 +278,12 @@ def fill_msg_from_detail(detail, event_type,  platform):
         info = get_info_from_imdb_id(detail['imdbid'])
         if info and info.get('title'):
             detail['title'] = re.sub(r' 第\S{1,3}季', '', info['title'], count=1)
-    if detail.get('title'):
+    if detail.get('eps_title'):
+        title = detail['eps_title']
+        msg += '\n影片名称：' + title
+    elif detail.get('title'):
         title = detail['title']
         msg += '\n影片名称：' + title
-        # if detail.get('seasonnumber'):
-        #     title += ' S' + str(detail['seasonnumber'])
-        # if detail.get('episodenumbers'):
-        #     title += 'E' + str(detail['episodenumbers'])
     if detail.get('quality'):
         msg += '\n视频质量：' + detail['quality']
     if detail.get('size'):
@@ -340,22 +313,28 @@ class Sonarr:
         }
 
     def grab(self, post_data):
+        imdb_id = post_data['series']['imdbId']
+        episode_number = post_data['episodes'][0]['episodeNumber']
+        seesion_number = post_data['episodes'][0]['seasonNumber']
+        movie_data = movie_db_api.get_tv_info(imdb_id, seesion_number, episode_number)
+        movie_img_conf = movie_db_api.get_img_configuration()
+        img_url = ''
+        if movie_img_conf and movie_data:
+            img_url = movie_img_conf['images']['base_url'] + 'w780' + movie_data['backdrop_path']
         detail = {
-            'id': os.environ.get('sonarr_series_id', None),
-            'title': os.environ.get('sonarr_series_title', None),
-            'imdbid': os.environ.get('sonarr_series_imdbid', None),
-            'tvdbid': os.environ.get('sonarr_series_tvdbid', None),
-            'quality': os.environ.get('sonarr_release_quality', None),
-            'size': os.environ.get('sonarr_release_size', None),
-            'episodecount': os.environ.get('sonarr_release_episodecount', None),
-            'episodenumbers': os.environ.get('sonarr_release_episodenumbers', None),
-            'seasonnumber': os.environ.get('sonarr_release_seasonnumber', None),
-            'torrent_title': os.environ.get('sonarr_release_title', None),
-            'indexer': os.environ.get('sonarr_release_indexer', None),
+            'id': post_data['series']['id'],
+            'title': movie_data['all_name'] if movie_data and movie_data['all_name'] else post_data['series']['title'],
+            'eps_title': movie_data['eps_name'],
+            'imdbid': imdb_id,
+            'quality': post_data['release']['quality'],
+            'size': post_data['release']['size'],
+            'episodenumbers': episode_number,
+            'seasonnumber': seesion_number,
+            'torrent_title': post_data['release']['releaseTitle'],
+            'indexer': post_data['release']['indexer'],
         }
-        title, msg = fill_msg_from_detail(detail, '抓取中', 'Sonarr')
-        url = get_file_url(detail['id'], self.type)
-        wecom_app('开始下载：' + title, msg, url)
+        title, msg = fill_msg_from_detail(detail, '开始下载', 'Sonarr')
+        wecom_app('开始下载：' + title, msg, img_url)
         print("Grab")
 
     def download(self, post_data):
@@ -370,10 +349,12 @@ class Sonarr:
         detail = {
             'id': post_data['series']['id'],
             'title': movie_data['all_name'] if movie_data and movie_data['all_name'] else post_data['series']['title'],
+            'eps_title': movie_data['eps_name'],
             'imdbid': imdb_id,
             'episodenumbers': episode_number,
             'seasonnumber': seesion_number,
             'quality': post_data['episodeFile']['quality'],
+            'size': post_data['episodeFile']['size'],
             'isupgrade': post_data['isUpgrade']
         }
         title, msg = fill_msg_from_detail(detail, '下载完成', 'Sonarr')
@@ -381,65 +362,15 @@ class Sonarr:
         print("Download")
 
     def rename(self, post_data):
-        # detail = {
-        #     'id': os.environ.get('sonarr_series_id', None),
-        #     'title': os.environ.get('sonarr_series_title', None),
-        #     'episodenumbers': os.environ.get('sonarr_episodefile_episodenumbers', None),
-        #     'seasonnumber': os.environ.get('sonarr_episodefile_seasonnumber', None),
-        #     'quality': os.environ.get('sonarr_episodefile_quality', None),
-        # }
-
         print("Rename")
 
     def episode_deleted(self, post_data):
-        detail = {
-            'id': os.environ.get('sonarr_series_id', None),
-            'title': os.environ.get('sonarr_series_title', None),
-            'imdbid': os.environ.get('sonarr_series_imdbid', None),
-            'episodenumbers': os.environ.get('sonarr_episodefile_episodenumbers', None),
-            'seasonnumber': os.environ.get('sonarr_episodefile_seasonnumber', None),
-            'quality': os.environ.get('sonarr_episodefile_quality', None),
-            'path': os.environ.get('sonarr_episodefile_path', None),
-        }
-        title, msg = fill_msg_from_detail(detail, '文件删除', 'Sonarr')
-        url = get_file_url(detail['id'], self.type)
-        wecom_app('文件已删除：' + title, msg, url)
         print("EpisodeDeleted")
 
     def series_deleted(self, post_data):
-        detail = {
-            'id': os.environ.get('sonarr_series_id', None),
-            'title': os.environ.get('sonarr_series_title', None),
-            'imdbid': os.environ.get('sonarr_series_imdbid', None),
-            'path': os.environ.get('sonarr_series_path', None),
-            'deletedfiles': os.environ.get('sonarr_series_deletedfiles', None),  # True or False
-        }
-        title, msg = fill_msg_from_detail(detail, '剧集删除', 'Sonarr')
-        url = get_file_url(detail['id'], self.type)
-        wecom_app('剧集已删除：' + title, msg, url)
         print("SeriesDeleted")
 
     def health_issue(self, post_data):
-        detail = {
-            'level': os.environ.get('sonarr_health_issue_level', None),  # Ok, Notice, Warning, or Error
-            'message': os.environ.get('sonarr_health_issue_message', None),
-            'type': os.environ.get('sonarr_health_issue_type', None),
-            'wiki': os.environ.get('sonarr_health_issue_wiki', None),
-        }
-        msg = ''
-        if detail['level']:
-            level = detail['level']
-            if level == 'Ok':
-                msg += '一切正常！Perfect！'
-            elif level == 'Notice':
-                msg += '建议：'
-            elif level == 'Warning':
-                msg += '警告：'
-            elif level == 'Error':
-                msg += '错误：'
-        if detail['message']:
-            msg += '\n' + detail['message']
-        wecom_app('Sonarr状态通知', msg)
         print("HealthIssue")
 
     def default(self, post_data):
@@ -456,7 +387,6 @@ class Sonarr:
             'isupgrade': os.environ.get('sonarr_isupgrade', None),
         }
         title, msg = fill_msg_from_detail(detail, '下载完成', 'Sonarr')
-        url = get_file_url(detail['id'], self.type)
         wecom_app('下载完成：' + title, msg, url)
         print("Download")
 
@@ -541,7 +471,6 @@ class Radarr:
             'indexer': post_data['release']['indexer'],
         }
         title, msg = fill_msg_from_detail(detail, '测试', 'Radarr')
-        # url = get_file_url(detail['id'], self.type)
         wecom_app('Radarr测试推送：' + title, msg, img_url)
 
     def exec(self, post_data):

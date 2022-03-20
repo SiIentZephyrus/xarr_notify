@@ -1,3 +1,4 @@
+# 参考配置文件
 user:
   # 企业微信应用的配置，仅需前4项，若第五项配置了仅在缓存图片未找到的情况下使用;配置参考http://note.youdao.com/s/HMiudGkb
   qywx:
