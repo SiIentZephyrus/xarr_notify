@@ -263,12 +263,9 @@ def fill_msg_from_detail(detail, event_type,  platform):
         info = get_info_from_imdb_id(detail['imdbid'])
         if info and info.get('title'):
             detail['title'] = re.sub(r' 第\S{1,3}季', '', info['title'], count=1)
-    if detail.get('eps_title'):
-        title = detail['eps_title']
-        msg += '\n影片名称：' + title
-    elif detail.get('title'):
+    if detail.get('title'):
         title = detail['title']
-        msg += '\n影片名称：' + title
+        msg += '\n影片名称：' + (detail['eps_title'] if detail['eps_title'] else title)
     if detail.get('quality'):
         msg += '\n视频质量：' + detail['quality']
     if detail.get('size'):
