@@ -79,7 +79,7 @@ def get_tv_info(tv_id, seesion_number, episode_number):
                 # tv_info = get_tv_info_by_id(show_id)
                 tv_info = response['tv_results'][0]
                 eps_info = get_tv_ep_info_by_id(show_id, seesion_number, episode_number)
-                tv_info['all_name'] = tv_info['name'] + ' - S' + str(seesion_number) + 'E' + str(episode_number) + ' ' + eps_info['name']
+                tv_info['all_name'] = tv_info['name'] + ' S' + str(seesion_number) + 'E' + str(episode_number) + ' - ' + eps_info['name']
                 # 获取tv的中文名称
                 session.close()
                 return tv_info

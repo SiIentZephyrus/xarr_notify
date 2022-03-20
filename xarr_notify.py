@@ -307,10 +307,10 @@ def fill_msg_from_detail(detail, event_type,  platform):
     if detail.get('title'):
         title = detail['title']
         msg += '\n影片名称：' + title
-        if detail.get('seasonnumber'):
-            title += ' S' + str(detail['seasonnumber'])
-        if detail.get('episodenumbers'):
-            title += 'E' + str(detail['episodenumbers'])
+        # if detail.get('seasonnumber'):
+        #     title += ' S' + str(detail['seasonnumber'])
+        # if detail.get('episodenumbers'):
+        #     title += 'E' + str(detail['episodenumbers'])
     if detail.get('quality'):
         msg += '\n视频质量：' + detail['quality']
     if detail.get('size'):
