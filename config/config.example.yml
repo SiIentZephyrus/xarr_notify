@@ -1,6 +1,10 @@
 user:
   # 企业微信应用的配置，仅需前4项，若第五项配置了仅在缓存图片未找到的情况下使用;配置参考http://note.youdao.com/s/HMiudGkb
-  qywx: ''
+  qywx:
+    corpid: ''
+    agentid: ''
+    secret: ''
+    touser: '@all'
   # 前往 https://sm.ms/ 注册帐号后填入 SMMS_ID 为用户名，SMMS_PSWD为密码， 免费空间5G
   smms_id: ''
   smms_pswd: ''
@@ -14,3 +18,7 @@ radarr:
   # 套件版Sonarr/Radarr可以不用配置，此为Radarr 里的缓存图片路径，docker 版路径一般是/config/MediaCover/，找一下MediaCover这个目录的位置即可
   # 未配置正确的情况下推送没有剧集的图片
   radarr_path: ''
+themoviedb:
+  token: # themoviedb的api令牌
+  max_retry_count: 5 # 最大重试次数
+  retry_wait_time: 10 # 重试等待时间 秒
