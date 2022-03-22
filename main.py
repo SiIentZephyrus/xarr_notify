@@ -42,9 +42,11 @@ class NoticeHandler(tornado.web.RequestHandler):
 
 
 def make_app():
+    print("服务器准备启动")
     return tornado.web.Application([
         (r"/", MainHandler), ('/notice', NoticeHandler)
     ])
+
 
 if __name__ == "__main__":
     if platform.system() == "Windows":
@@ -53,3 +55,4 @@ if __name__ == "__main__":
     app = make_app()
     app.listen(8898)
     tornado.ioloop.IOLoop.current().start()
+    print("服务器启动成功！")
