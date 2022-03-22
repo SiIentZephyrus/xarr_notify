@@ -11,4 +11,4 @@ RUN chmod a+x build/install.sh && build/install.sh
 
 EXPOSE 8898
 
-CMD ["python3 /app/xarr_notify/main.py"]
+CMD ["python3 ./main.py"]
