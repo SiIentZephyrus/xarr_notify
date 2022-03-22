@@ -1,7 +1,7 @@
 import json
 import os
 import re
-
+import logging
 import requests
 import yaml
 import movie_db_api
@@ -14,7 +14,7 @@ QYWX = {}
 def wecom_app(title, content, media_url=''):
     try:
         if not QYWX:
-            print("QYWX_AM 并未设置！！\n取消推送")
+            logging.info("QYWX_AM 并未设置！！\n取消推送")
             return
         # QYWX_AM_AY = re.split(',', QYWX)
         # if 4 < len(QYWX_AM_AY) > 5:
@@ -38,11 +38,11 @@ def wecom_app(title, content, media_url=''):
         else:
             response = wx.send_mpnews(title, content, media_id, touser)
         if response == 'ok':
-            print('推送成功！')
+            logging.info('推送成功！')
         else:
-            print('推送失败！错误信息如下：\n', response)
+            logging.info('推送失败！错误信息如下：\n', response)
     except Exception as e:
-        print(e)
+        logging.info(e)
 
 
 class WeCom:
@@ -101,7 +101,6 @@ class WeCom:
         return respone["errmsg"]
 
     def send_news(self, title, message, meida_url, touser="@all"):
-        print(meida_url)
         send_url = 'https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=' + self.get_access_token()
         send_values = {
             "touser": touser,
@@ -162,7 +161,6 @@ class Smms:
         else:
             re = requests.post(url, files=files, params=params)
         re_json = json.loads(re.text)
-        print(re_json)
         try:
             if re_json['success']:
                 return re_json['data']['url']
@@ -317,7 +315,7 @@ class Sonarr:
         }
         title, msg = fill_msg_from_detail(detail, '开始下载', 'Sonarr')
         wecom_app('开始下载：' + title, msg, img_url)
-        print("Grab")
+        logging.info("Grab")
 
     def download(self, post_data):
         imdb_id = post_data['series']['imdbId']
@@ -341,22 +339,22 @@ class Sonarr:
         }
         title, msg = fill_msg_from_detail(detail, '下载完成', 'Sonarr')
         wecom_app('下载完成：' + title, msg, img_url)
-        print("Download")
+        logging.info("Download")
 
     def rename(self, post_data):
-        print("Rename")
+        logging.info("Rename")
 
     def episode_deleted(self, post_data):
-        print("EpisodeDeleted")
+        logging.info("EpisodeDeleted")
 
     def series_deleted(self, post_data):
-        print("SeriesDeleted")
+        logging.info("SeriesDeleted")
 
     def health_issue(self, post_data):
-        print("HealthIssue")
+        logging.info("HealthIssue")
 
     def default(self, post_data):
-        print("Default")
+        logging.info("Default")
 
     def test(self, post_data):
         detail = {
@@ -370,7 +368,7 @@ class Sonarr:
         }
         title, msg = fill_msg_from_detail(detail, '下载完成', 'Sonarr')
         wecom_app('下载完成：' + title, msg, url)
-        print("Download")
+        logging.info("Download")
 
     def exec(self, post_data):
         fun_name = post_data['eventType']
@@ -407,7 +405,7 @@ class Radarr:
         }
         title, msg = fill_msg_from_detail(detail, '抓取中', 'Radarr')
         wecom_app('下载完成：' + title, msg, img_url)
-        print("Grab")
+        logging.info("Grab")
 
     def download(self, post_data):
         movie_data = movie_db_api.get_movie_info(post_data['movie']['tmdbId'])
@@ -424,19 +422,19 @@ class Radarr:
         }
         title, msg = fill_msg_from_detail(detail, '下载完成', 'Radarr')
         wecom_app('下载完成：' + title, msg, img_url)
-        print("Download")
+        logging.info("Download")
 
     def rename(self, post_data):
-        print("Rename")
+        logging.info("Rename")
 
     def application_update(self, post_data):
-        print("ApplicationUpdate")
+        logging.info("ApplicationUpdate")
 
     def health_issue(self, post_data):
-        print("HealthIssue")
+        logging.info("HealthIssue")
 
     def default(self, post_data):
-        print("Default")
+        logging.info("Default")
 
     def test(self, post_data):
         movie_data = movie_db_api.get_movie_info(post_data['movie']['tmdbId'])

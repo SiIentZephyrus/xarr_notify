@@ -1,5 +1,5 @@
 import os
-
+import logging
 import requests
 import yaml
 
@@ -31,10 +31,10 @@ def get_movie_info(movie_id):
                 session.close()
                 return response
         except Exception as e:
-            print('请求电影明细第{}次失败'.format(retry_count))
-            print(e)
+            logging.info('请求电影明细第{}次失败'.format(retry_count))
+            logging.info(e)
         if retry_count > max_retry_count:
-            print('请求电影明细彻底失败，放弃请求。')
+            logging.info('请求电影明细彻底失败，放弃请求。')
             session.close()
             return None
         retry_count = retry_count + 1
@@ -54,10 +54,10 @@ def get_img_configuration():
                 session.close()
                 return response
         except Exception as e:
-            print('请求图片配置第{}次失败'.format(retry_count))
-            print(e)
+            logging.info('请求图片配置第{}次失败'.format(retry_count))
+            logging.info(e)
         if retry_count > max_retry_count:
-            print('请求图片配置彻底失败，放弃请求。')
+            logging.info('请求图片配置彻底失败，放弃请求。')
             session.close()
             return None
         retry_count = retry_count + 1
@@ -85,10 +85,10 @@ def get_tv_info(tv_id, seesion_number, episode_number):
                 session.close()
                 return tv_info
         except Exception as e:
-            print('请求电视剧明细第{}次失败'.format(retry_count))
-            print(e)
+            logging.info('请求电视剧明细第{}次失败'.format(retry_count))
+            logging.info(e)
         if retry_count > max_retry_count:
-            print('请求电视剧明细彻底失败，放弃请求。')
+            logging.info('请求电视剧明细彻底失败，放弃请求。')
             session.close()
             return None
         retry_count = retry_count + 1
@@ -106,10 +106,10 @@ def get_tv_info_by_id(show_id):
                 session.close()
                 return response
         except Exception as e:
-            print('请求电视剧集信息第{}次失败'.format(retry_count))
-            print(e)
+            logging.info('请求电视剧集信息第{}次失败'.format(retry_count))
+            logging.info(e)
         if retry_count > max_retry_count:
-            print('请求电视剧集信息彻底失败，放弃请求。')
+            logging.info('请求电视剧集信息彻底失败，放弃请求。')
             session.close()
             return None
         retry_count = retry_count + 1
@@ -127,10 +127,10 @@ def get_tv_ep_info_by_id(show_id, seesion_number, episode_number):
                 session.close()
                 return response
         except Exception as e:
-            print('请求电视剧集单集明细第{}次失败'.format(retry_count))
-            print(e)
+            logging.info('请求电视剧集单集明细第{}次失败'.format(retry_count))
+            logging.info(e)
         if retry_count > max_retry_count:
-            print('请求电视剧集单集彻底失败，放弃请求。')
+            logging.info('请求电视剧集单集彻底失败，放弃请求。')
             session.close()
             return None
         retry_count = retry_count + 1
