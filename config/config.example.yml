@@ -2,10 +2,10 @@
 user:
   # 企业微信应用的配置，仅需前4项，若第五项配置了仅在缓存图片未找到的情况下使用;配置参考http://note.youdao.com/s/HMiudGkb
   qywx:
-    corpid: ''
-    agentid: ''
-    secret: ''
-    touser: '@all'
+    corpid: '' # 企业微信id
+    agentid: '' # 企业微信应用id
+    secret: '' # 企业微信应用secret
+    touser: '@all' # 发送给用户
 themoviedb:
   token: # themoviedb的api令牌，用来推送的时候提供图片
   max_retry_count: 5 # api请求的最大重试次数
