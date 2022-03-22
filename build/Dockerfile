@@ -1,8 +1,8 @@
 # 基于镜像基础
-FROM python:3.9.5
+FROM python:3.9-alpine3.14
 
 # 复制文件到容器中
-ADD ../* /app/xarr_notify/
+COPY . /app/xarr_notify/
 
 # 工作目录 /var/app
 WORKDIR /app/xarr_notify
