@@ -7,8 +7,8 @@ COPY . /app/xarr_notify/
 # 工作目录 /var/app
 WORKDIR /app/xarr_notify
 
-RUN /app/xarr_notify/build/install.sh
+RUN chmod a+x ./build/install.sh && ./build/install.sh
 
 EXPOSE 8898
 
-CMD /app/xarr_notify/build/run.sh
+CMD ./build/run.sh
