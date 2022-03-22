@@ -2,5 +2,5 @@
 
 set -e
 pip install --upgrade pip
-pip install -r ../requirements.txt
-chmod -R 777 ./run.sh
+pip install -r ./requirements.txt
+chmod -R 777 build/run.sh
