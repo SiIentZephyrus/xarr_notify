@@ -263,7 +263,7 @@ def fill_msg_from_detail(detail, event_type,  platform):
             detail['title'] = re.sub(r' 第\S{1,3}季', '', info['title'], count=1)
     if detail.get('title'):
         title = detail['title']
-        msg += '\n影片名称：' + (detail['eps_title'] if detail['eps_title'] else title)
+        msg += '\n影片名称：' + (detail['eps_title'] if 'eps_title' in detail.keys() else title)
     if detail.get('quality'):
         msg += '\n视频质量：' + detail['quality']
     if detail.get('size'):
@@ -367,7 +367,7 @@ class Sonarr:
             'isupgrade': os.environ.get('sonarr_isupgrade', None),
         }
         title, msg = fill_msg_from_detail(detail, '下载完成', 'Sonarr')
-        wecom_app('下载完成：' + title, msg, url)
+        wecom_app('下载完成：' + title, msg, '')
         logging.info("Download")
 
     def exec(self, post_data):

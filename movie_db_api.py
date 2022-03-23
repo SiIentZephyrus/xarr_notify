@@ -11,11 +11,15 @@ retry_wait_time = 10
 
 def load_user_config():
     global token
+    global max_retry_count
+    global retry_wait_time
     user_setting_filepath = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config/config.yml')
     if os.path.exists(user_setting_filepath):
         with open(user_setting_filepath, 'r', encoding='utf-8') as file:
             user_config = yaml.safe_load(file)
         token = user_config['themoviedb']['token']
+        max_retry_count = user_config['themoviedb']['max_retry_count']
+        retry_wait_time = user_config['themoviedb']['retry_wait_time']
 
 
 # 获取电影明细
@@ -52,6 +56,7 @@ def get_img_configuration():
             if response and response.status_code == 200:
                 response = response.json()
                 session.close()
+                logging.info('请求图片配置成功。')
                 return response
         except Exception as e:
             logging.info('请求图片配置第{}次失败'.format(retry_count))
