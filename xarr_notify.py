@@ -404,7 +404,7 @@ class Radarr:
             'indexer': post_data['release']['indexer'],
         }
         title, msg = fill_msg_from_detail(detail, '抓取中', 'Radarr')
-        wecom_app('下载完成：' + title, msg, img_url)
+        wecom_app('开始下载：' + title, msg, img_url)
         logging.info("Grab")
 
     def download(self, post_data):
